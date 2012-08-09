@@ -1,3 +1,0 @@
-[submodule "src/php/php-cli-tools"]
-	path = src/php/php-cli-tools
-	url = git://github.com/tolgap/wp-svn-cli.git
