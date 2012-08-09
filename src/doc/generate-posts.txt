@@ -1,0 +1,29 @@
+wp-generate-posts(1) -- Generate a bunch of posts.
+====
+
+## SYNOPSIS
+
+`wp generate posts` [--count=100] [--type=post] [--status=publish]
+[--author=<login>] [--max_depth=1]
+
+## OPTIONS
+
+* `--count`=<number>:
+
+	How many posts to generate. Default: 100
+
+* `--type`=<post_type>:
+
+	The type of the generated posts. Default: 'post'
+
+* `--status`=<post_status>:
+
+	The status of the generated posts. Default: 'publish'
+
+* `--author`=<login>:
+
+	The author of the generated posts. Default: none
+
+* `--max_depth`=<number>:
+
+	For hierarchical post types, generate child posts down to a certain depth. Default: 1

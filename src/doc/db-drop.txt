@@ -1,0 +1,12 @@
+wp-db-drop(1) -- Drop the database specified in wp-config.php
+====
+
+## SYNOPSIS
+
+`wp db drop` [--yes]
+
+## OPTIONS
+
+* `--yes`:
+
+	Answer yes to the confirmation message.
