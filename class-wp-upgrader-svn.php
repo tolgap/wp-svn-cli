@@ -95,12 +95,13 @@ if(!class_exists(Plugin_Upgrader)) {
                             }
                         }
 
-                        // //sort the arrays by string length so pluginold/ folder is created first
-                        // var_dump($newdir_array);
-                        // usort($newrecursive_array, 'sort');
-                        // usort($newdir_array, 'sort');
-                        // var_dump($newdir_array);
-                        // exit;
+                        //sort the arrays by string length so pluginold/ folder is created first
+                        usort($newrecursive_array, function($a, $b) {
+                            return strlen($a) - strlen($b);
+                        });
+                        usort($newdir_array, function($a, $b) {
+                            return strlen($a) - strlen($b);
+                        });
 
                         //create folders and move .svn folders into them.
                         for($i=0; $i<sizeof($newdir_array); $i++) {
@@ -163,16 +164,11 @@ if(!class_exists(Plugin_Upgrader)) {
             }
 
             //REMOVE pluginold FOLDER
-            $command4 = 'rm -r ' .getcwd().'/wp-content/plugins/pluginold/';
+            $command4 = 'rm -rf ' .getcwd().'/wp-content/plugins/pluginold/';
             WP_CLI::launch($command4, false);
 
             //Bombard the calling function will all the info which we've just used.
             return $this->result;
         }
-
-        function sort ($a, $b) {
-            return strlen($a) - strlen($b);
-        }
-
     }
 }

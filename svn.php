@@ -15,7 +15,7 @@ class SVN_Command extends Plugin_Command
 {
 
     protected $item_type = 'plugin';
-    protected $upgrader;
+    protected $upgrader = 'WP_Upgrader_SVN';
     protected $upgrade_refresh = 'wp_update_plugins';
     protected $upgrade_transient = 'update_plugins';
 
@@ -74,10 +74,8 @@ class SVN_Command extends Plugin_Command
 
         // If --all, UPDATE ALL THE THINGS
         if ( isset( $assoc_args['all'] ) ) {
-            if($this->upgrader == null)
-                $this->upgrader = new WP_Upgrader_SVN(new Bulk_Upgrader_Skin);
-            $this->upgrader->upgrade( $file );
-            $result = $this->upgrader->bulk_upgrade( $items_to_update );
+            $upgrader = SVN_Command::get_upgrader( $this->upgrader );
+            $result = $upgrader->bulk_upgrade( $items_to_update );
 
             // Let the user know the results.
             $num_to_update = count( $items_to_update );
@@ -94,7 +92,13 @@ class SVN_Command extends Plugin_Command
 
         // Else list items that require updates
         } else {
-                WP_CLI::line( $item_list );
+            WP_CLI::line( $item_list );
         }
+    }
+
+    static function get_upgrader($class) {
+        require WP_CLI_ROOT . '/class-cli-upgrader-skin.php';
+
+        return new $class( new CLI_Upgrader_Skin );
     }
 }
