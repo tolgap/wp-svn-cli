@@ -2,7 +2,7 @@
 
 WP_CLI::add_command('svn', 'SVN_Command');
 require_once WP_CLI_ROOT . 'commands/internals/plugin.php';
-require 'class-wp-upgrader-tolga.php';
+require 'class-wp-upgrader-svn.php';
 
 /**
  * Implement Wordpress upgrader with respect to .svn folders
