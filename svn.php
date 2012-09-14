@@ -15,6 +15,7 @@ class SVN_Command extends Plugin_Command
 {
 
     protected $item_type = 'plugin';
+    protected $upgrader;
     protected $upgrade_refresh = 'wp_update_plugins';
     protected $upgrade_transient = 'update_plugins';
 
@@ -35,8 +36,8 @@ class SVN_Command extends Plugin_Command
             if ( !empty( $args ) && !isset( $assoc_args['all'] ) ) {
                 list( $file, $name ) = $this->parse_name( $args, __FUNCTION__ );
 
-                $upgrader = new WP_Upgrader_SVN();
-                $upgrader->upgrade( $file );
+                $this->upgrader = new WP_Upgrader_SVN(null);
+                $this->upgrader->upgrade( $file );
             } else {
                 $this->update_multiple( $args, $assoc_args );
             }
@@ -47,51 +48,53 @@ class SVN_Command extends Plugin_Command
      * @see WP_CLI_Command_With_Upgrade::update_multiple()
      */
     private function update_multiple( $args, $assoc_args ) {
-    // Grab all items that need updates
-    // If we have no sub-arguments, add them to the output list.
-    $item_list = "Available {$this->item_type} updates:";
-    $items_to_update = array();
-    foreach ( $this->get_item_list() as $file ) {
-        if ( $this->get_update_status( $file ) ) {
-            $items_to_update[] = $file;
+        // Grab all items that need updates
+        // If we have no sub-arguments, add them to the output list.
+        $item_list = "Available {$this->item_type} updates:";
+        $items_to_update = array();
+        foreach ( $this->get_item_list() as $file ) {
+            if ( $this->get_update_status( $file ) ) {
+                $items_to_update[] = $file;
 
-            if ( empty( $assoc_args ) ) {
-                if ( false === strpos( $file, '/' ) )
-                    $name = str_replace('.php', '', basename($file));
-                else
-                    $name = dirname($file);
+                if ( empty( $assoc_args ) ) {
+                    if ( false === strpos( $file, '/' ) )
+                        $name = str_replace('.php', '', basename($file));
+                    else
+                        $name = dirname($file);
 
-                $item_list .= "\n\t%y$name%n";
+                    $item_list .= "\n\t%y$name%n";
+                }
             }
         }
-    }
 
-    if ( empty( $items_to_update ) ) {
-        WP_CLI::line( "No {$this->item_type} updates available." );
-        return;
-    }
-
-    // If --all, UPDATE ALL THE THINGS
-    if ( isset( $assoc_args['all'] ) ) {
-        $upgrader = WP_CLI::get_upgrader( $this->upgrader );
-        $result = $upgrader->bulk_upgrade( $items_to_update );
-
-        // Let the user know the results.
-        $num_to_update = count( $items_to_update );
-        $num_updated = count( array_filter( $result ) );
-
-        $line = "Updated $num_updated/$num_to_update {$this->item_type}s.";
-        if ( $num_to_update == $num_updated ) {
-            WP_CLI::success( $line );
-        } else if ( $num_updated > 0 ) {
-            WP_CLI::warning( $line );
-        } else {
-            WP_CLI::error( $line );
+        if ( empty( $items_to_update ) ) {
+            WP_CLI::line( "No {$this->item_type} updates available." );
+            return;
         }
+
+        // If --all, UPDATE ALL THE THINGS
+        if ( isset( $assoc_args['all'] ) ) {
+            if($this->upgrader == null)
+                $this->upgrader = new WP_Upgrader_SVN(new Bulk_Upgrader_Skin);
+            $this->upgrader->upgrade( $file );
+            $result = $this->upgrader->bulk_upgrade( $items_to_update );
+
+            // Let the user know the results.
+            $num_to_update = count( $items_to_update );
+            $num_updated = count( array_filter( $result ) );
+
+            $line = "Updated $num_updated/$num_to_update {$this->item_type}s.";
+            if ( $num_to_update == $num_updated ) {
+                WP_CLI::success( $line );
+            } else if ( $num_updated > 0 ) {
+                WP_CLI::warning( $line );
+            } else {
+                WP_CLI::error( $line );
+            }
 
         // Else list items that require updates
         } else {
-            WP_CLI::line( $item_list );
+                WP_CLI::line( $item_list );
         }
     }
 }

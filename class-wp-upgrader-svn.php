@@ -6,6 +6,17 @@ if(!class_exists(Plugin_Upgrader)) {
     class WP_Upgrader_SVN extends Plugin_Upgrader
     {
 
+        var $strings = array();
+        var $skin = null;
+        var $result = array();
+
+        function __construct($skin = null) {
+            if ( null == $skin )
+                $this->skin = new Bulk_Upgrader_Skin();
+            else
+                $this->skin = $skin;
+        }
+
         function install_package($args = array()) {
             global $wp_filesystem;
             $defaults = array( 'source' => '', 'destination' => '', //Please always pass these
@@ -84,9 +95,12 @@ if(!class_exists(Plugin_Upgrader)) {
                             }
                         }
 
-                        //sort the arrays by string length so pluginold/ folder is created first
-                        usort($newrecursive_array, 'sort');
-                        usort($newdir_array, 'sort');
+                        // //sort the arrays by string length so pluginold/ folder is created first
+                        // var_dump($newdir_array);
+                        // usort($newrecursive_array, 'sort');
+                        // usort($newdir_array, 'sort');
+                        // var_dump($newdir_array);
+                        // exit;
 
                         //create folders and move .svn folders into them.
                         for($i=0; $i<sizeof($newdir_array); $i++) {
