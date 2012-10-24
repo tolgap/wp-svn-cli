@@ -36,8 +36,8 @@ class Svn_Command extends Plugin_Command
             if ( !empty( $args ) && !isset( $assoc_args['all'] ) ) {
                 list( $file, $name ) = $this->parse_name( $args, __FUNCTION__ );
 
-                $this->upgrader = new WP_Upgrader_SVN(SVN_Command::get_upgrader($this->upgrader));
-                $this->upgrader->upgrade( $file );
+                $upgrader = SVN_Command::get_upgrader($this->upgrader);
+                $upgrader->upgrade( $file );
             } else {
                 $this->update_multiple( $args, $assoc_args );
             }
@@ -207,8 +207,7 @@ if(!class_exists(Plugin_Upgrader)) {
 
                         //create folders and move .svn folders into them.
                         for($i=0; $i<sizeof($newdir_array); $i++) {
-                            $command1 = 'mkdir '.$newrecursive_array[$i];
-                            WP_CLI::launch($command1, false);
+                            $wp_filesystem->mkdir($newrecursive_array[$i], FS_CHMOD_DIR);
                             $command2 = 'mv '.$olddir_array[$i].' '.$newdir_array[$i];
                             WP_CLI::launch($command2, false);
                         }
@@ -266,8 +265,7 @@ if(!class_exists(Plugin_Upgrader)) {
             }
 
             //REMOVE pluginold FOLDER
-            $command4 = 'rm -rf ' .getcwd().'/wp-content/plugins/pluginold/';
-            WP_CLI::launch($command4, false);
+            $wp_filesystem->delete(getcwd().'/wp-content/plugins/pluginold/', true);
 
             //Bombard the calling function will all the info which we've just used.
             return $this->result;
