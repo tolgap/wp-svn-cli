@@ -1,6 +1,9 @@
 <?php
-WP_CLI::add_command('svn', 'Svn');
+
+WP_CLI::add_command('svn', 'Svn_Command');
+
 require_once WP_CLI_ROOT . 'commands/internals/plugin.php';
+
 /**
  * Implement Wordpress upgrader with respect to .svn folders
  *
@@ -8,8 +11,7 @@ require_once WP_CLI_ROOT . 'commands/internals/plugin.php';
  * @subpackage commands/community
  * @maintainer Tolga Paksoy (https://github.com/tolgap)
  */
-
-class Svn extends Plugin_Command
+class Svn_Command extends Plugin_Command
 {
 
     protected $item_type = 'plugin';
@@ -103,7 +105,6 @@ class Svn extends Plugin_Command
 
 if(!class_exists(Plugin_Upgrader)) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-
     class WP_Upgrader_SVN extends Plugin_Upgrader
     {
 
